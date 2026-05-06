@@ -1,0 +1,73 @@
+{
+  "repo": "tsorderbook",
+  "language": "TypeScript",
+  "category": "Trading systems",
+  "goal": "Maintain price-time priority order books from event logs.",
+  "review_model": {
+    "terms": [
+      "spread pressure",
+      "fill risk",
+      "portfolio drift",
+      "quote width"
+    ],
+    "lanes": [
+      "ship",
+      "watch",
+      "hold"
+    ],
+    "score": "signal * 2 + slack + confidence - drag * 3",
+    "purpose": "surface the domain-specific cases that need the most careful review"
+  },
+  "cases": [
+    {
+      "name": "baseline",
+      "focus": "spread pressure",
+      "signal": 77,
+      "slack": 44,
+      "drag": 32,
+      "confidence": 54,
+      "score": 156,
+      "lane": "ship"
+    },
+    {
+      "name": "stress",
+      "focus": "fill risk",
+      "signal": 57,
+      "slack": 34,
+      "drag": 26,
+      "confidence": 84,
+      "score": 154,
+      "lane": "ship"
+    },
+    {
+      "name": "edge",
+      "focus": "portfolio drift",
+      "signal": 73,
+      "slack": 53,
+      "drag": 30,
+      "confidence": 92,
+      "score": 201,
+      "lane": "ship"
+    },
+    {
+      "name": "recovery",
+      "focus": "quote width",
+      "signal": 62,
+      "slack": 46,
+      "drag": 14,
+      "confidence": 94,
+      "score": 222,
+      "lane": "ship"
+    },
+    {
+      "name": "stale",
+      "focus": "spread pressure",
+      "signal": 84,
+      "slack": 26,
+      "drag": 28,
+      "confidence": 57,
+      "score": 167,
+      "lane": "ship"
+    }
+  ]
+}

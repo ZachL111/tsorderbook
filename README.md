@@ -1,69 +1,40 @@
 # tsorderbook
 
-`tsorderbook` treats trading systems as a local verification problem. The TypeScript implementation is intentionally narrow, but the fixtures and notes make the behavior explicit.
+`tsorderbook` keeps a focused TypeScript implementation around trading systems. The project goal is to maintain price-time priority order books from event logs.
 
-## Tsorderbook Checkpoints
+## Reason For The Project
 
-Treat the compact fixture as the contract and the extended examples as a scratchpad. The code should stay boring enough that a change in behavior is obvious from the test output.
+The point is to make a small domain rule concrete enough that a reader can change it and immediately see what broke.
 
-## Architecture Notes
+## Tsorderbook Review Notes
 
-The core is a scoring model over demand, capacity, latency, risk, and weight. That keeps order state, risk checks, and fills in one explicit decision path. The threshold is 152, with risk penalty 6, latency penalty 3, and weight bonus 5. The TypeScript project keeps types close to the model and compiles before running its checks.
+Start with `quote width` and `fill risk`. Those cases create the widest score spread in this repo, so they are the best quick check when the model changes.
 
-## What This Is For
+## What It Does
 
-The repository exists to keep a technical idea small enough to reason about. The implementation avoids external dependencies where possible, then uses fixtures to make changes easy to review.
+- `fixtures/domain_review.csv` adds cases for spread pressure and fill risk.
+- `metadata/domain-review.json` records the same cases in structured form.
+- `config/review-profile.json` captures the read order and the two review questions.
+- `examples/tsorderbook-walkthrough.md` walks through the case spread.
+- The TypeScript code includes a review path for `quote width` and `fill risk`.
+- `docs/field-notes.md` explains the strongest and weakest cases.
 
-## Useful Pieces
+## How It Is Put Together
 
-- Uses fixture data to keep risk checks changes visible in code review.
-- Includes extended examples for fills, including `recovery` and `degraded`.
-- Documents portfolio pressure tradeoffs in `docs/operations.md`.
-- Runs locally with a single verification command and no external credentials.
-- Stores project constants and verification metadata in `metadata/project.json`.
+The core code exposes a scoring path and the added review layer uses `signal`, `slack`, `drag`, and `confidence`. The domain terms are `spread pressure`, `fill risk`, `portfolio drift`, and `quote width`.
 
-## Case Study
+The TypeScript code keeps the review rule close to the tests.
 
-The extended cases are not random smoke tests. `degraded` keeps pressure on the review path, while `recovery` shows the model when capacity and weight are strong enough to clear the threshold.
-
-## Project Layout
-
-- `src`: primary implementation
-- `tests`: verification harness
-- `fixtures`: compact golden scenarios
-- `examples`: expanded scenario set
-- `metadata`: project constants and verification metadata
-- `docs`: operations and extension notes
-- `scripts`: local verification and audit commands
-- `package.json`: Node package scripts
-
-## Tooling
-
-Install TypeScript and run the commands from the repository root. The project does not need credentials or a hosted service.
-
-## Local Workflow
+## Run It
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify.ps1
 ```
 
-This runs the language-level build or test path against the compact fixture set.
+## Check It
 
-## Quality Gate
+The check exercises the source code and the review fixture. `recovery` is the high score at 222; `stress` is the low score at 154.
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/audit.ps1
-```
+## Boundaries
 
-The audit command checks repository structure and README constraints before it delegates to the verifier.
-
-## Scope
-
-The scoring model is simple by design. More domain-specific behavior should be added through explicit adapters or extra fixture classes rather than hidden constants.
-
-## Expansion Ideas
-
-- Add a comparison mode that shows how decisions change when one signal is adjusted.
-- Add a loader for `examples/extended_cases.csv` and promote selected cases into the language test suite.
-- Add a short report command that prints the score breakdown for a single scenario.
-- Add one more trading systems fixture that focuses on a malformed or borderline input.
+The fixture set is small enough to audit by hand. The next useful expansion is malformed input coverage, not extra surface area.
